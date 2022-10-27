@@ -1,0 +1,56 @@
+test {
+    name    = Hilfeausgabe
+    comment = Der Hilfetext muss auf stdout ausgegeben werden.
+    type    = param
+    cmd       {DUT -h | diff - usage.txt}
+    expect    {^$}
+}
+
+test {
+    name    = Einfacher Primzahltest mit Primzahl (Ausgabe)
+    comment = Ist 7 eine Primzahl?
+    type    = param
+    cmd       {DUT 7 p | diff - seven_prime.txt}
+    expect    {^$}
+}
+
+test {
+    name    = Einfacher Primzahltest mit Primzahl (Rueckgabewert)
+    comment = Ist 7 eine Primzahl?
+    type    = param
+    cmd       {DUT 7 p 1>/dev/null 2>/dev/null && echo $?}
+    expect    {^0$}
+}
+
+test {
+    name    = Test auf froehliche Zahl nicht erfolgreich
+    comment = 4 h
+    type    = param
+    cmd       {DUT 4 h}
+    expect    {^O_o The number 4 is a sad number. o_O$}
+}
+
+test {
+    name    = Teiler einer nicht-Primzahl
+    comment = 51 d
+    type    = param
+    cmd       {DUT 51 d}
+    expect    {^The number 51 has the following divisors: 1, 3, 17, 51$}
+}
+
+test {
+    name    = Fehlerfall: keine Parameter (Fehlermeldung auf stderr)
+    comment = Fehlermeldung muss mit 'Error:' beginnen und als erstes auf stderr ausgegeben werden.
+    type    = param
+    cmd       {DUT 2>&1 1>/dev/null}
+    expect    {^Error:}
+}
+
+test {
+    name    = Fehlerfall: keine Parameter (Exitcode)
+    comment = Der Exitcode muss ungleich 0 sein im Fehlerfall.
+    type    = param
+    cmd       {DUT 2>/dev/null || echo "Fehlerfall"}
+    expect    {^Fehlerfall$}
+}
+

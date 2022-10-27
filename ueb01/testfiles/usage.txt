@@ -1,0 +1,20 @@
+Usage:
+
+  ueb01 -h
+
+  shows this help and exits.
+
+  - or -
+
+  ueb01 NUM OP
+
+  checks whether a given number is prime or a happy number or finds the
+  divisors of a given number. A call always consists of a number followed
+  by an operation, where:
+
+  NUM has to be a positive integer number (including 0).
+
+  OP is one of:
+    p checks whether NUM is prime or not
+    d looks for the dividers of NUM
+    h checks whether NUM is a happy number
