@@ -1,12 +1,11 @@
-/**
- * @file ueb01.c
+/** * @file ueb01.c
  * Uebung Systemnahe Programmierung im WS 22/23.
  *
  * Ein einfaches Programm fuer Ganzzahlen, welches testen kann ob
  * eine Zahl prim oder froehlich ist und ausgehend von einer Zahl
  * deren Teiler finden kann.
  *
- * @author mhe, mre, tti, <TODO Hier tragt ihr eure Namen ein>
+ * @author mhe, mre, tti, Joshua-Scott Schöttke, Ilana Schmara, Gruppe 21
  *
  */
 
@@ -43,34 +42,61 @@ printUsage  (FILE * stream) {
   
 }
 
+/*
+typedef enum{
+	ERR_None,
+	ERR_NoParameters,
+	ERR_WrongHelp,
+	ERR_TooMuchInformation
+}Error;
+*/
+
 
 /**
- * Funktion, die überprüft, ob die eingegebene Zahl eine Primzahl ist. Gibt 0 zurück, wenn sie eine ist und 1 wenn nicht.
+ * 
+ *
+ *
+ */
+int isDividable(int number){
+	int count = 1;
+
+	if(number % count == 0){
+
+	}
+}
+
+/**
+ * Funktion, die überprüft, ob die eingegebene Zahl eine Primzahl ist. 
+ * Gibt 1 zurück, wenn sie eine ist und 0 wenn nicht.
  *
  * @param[in]  number Die zu überprüfende Zahl
- * @param[out] int    0 wenn sie eine Primzal ist, 1 wenn sie keine ist. 
+ * @param[out] int    1 wenn sie eine Primzal ist, 0 wenn sie keine ist. 
  */
 int isPrime (int number){
-	int primNum = 0;
-	int count = 2;
+	int primNum = 1, //Erste Annahme eine Primzahl
+	    count = 2;
 
+	//Die Kleinste Primzahl ist 2
 	if (number <= 1) {
-	return primNum = 1;
-	}
-	
-	if (number == 2) {
-	return primNum;
-	}
-	
-	if (number % 2 == 1){
-		while ((primNum == 0) && ((count * count) <= number)) {
-			if (number % count == 0) {
-				primNum = 1;
-			}
-			count++;
-		}
+		primNum = 0;
 	} else {
-		primNum = 1;
+		if (number == 2) {
+			primNum = 1;
+		} else {
+			//Prüfung auf ungerade Zahlen	
+			if (number % count == 1){
+				count++;
+				//Berechnung ob die Zahl teilbar durch das Quadrat von count ist
+				while ((primNum == 1) && ((count * count) <= number)) {
+					if (number % count == 0) {
+						primNum = 0;
+					}
+					count += 2;
+				}
+			} else {
+				primNum = 0;
+			}
+		}
 	}
 	return primNum;
 }
@@ -96,29 +122,69 @@ int isPrime (int number){
  */
 int
 main (int argc, char * argv[]) {
-	Error err = ERR_None;
-	char op = '\0', END = '\0';
-	int next = 0;
-	int previous = 0;
-	int number = 0;
+	//Error err = ERR_None;
+	char op = '\0', 
+	     END = '\0';
+	int next = 0, 
+	    previous = 0, 
+	    number = 0;
 
 	switch(argc) {
 		case 0:
 		case 1: 		
-			err = ERR_NoParameters;
+		//	err = ERR_NoParameters;
 		break;
 		case 2:
 			/* Prüfung auf die korrekte Eingabe des Hilfeaufrufs. */
-			if(sscanf(argv[1], "-%c%c",  &OP, &END) && (OP == 'h') && (END == '\0'))){
+			if(sscanf(argv[1], "-%c%c", &op, &END) && (op == 'h') && (END == '\0')){
 				printUsage(stdout);
 			} else {
-				err = ERR_WrongHelp;
+				//err = ERR_WrongHelp;
+				fprintf(stderr, "%s\n", "Falsche Hilfe ausgabe! Entferne mich bitte noch!!!");
 			}
 		break;
 		case 3:
-			
+			if(sscanf(argv[1], "%i%c", &number, &END) == 1){
+				if(sscanf(argv[2], "%c%c", &op, &END) == 1){
+					if (number >= 0) {
+						switch(op){
+							case 'd':
+                                                                if(isDividable(number)){
+									fprintf(stdout, "%s%d%s\n", "The number ", number," has the following divisors: TEILER");
+								} else {
+									fprintf(stdout, "%s%d%s\n", "The number ", number," is not dividable.");
+                                                                }
+							break;
+							case 'h':
+                                                                if(isHappy(number)){
+                                                                        fprintf(stdout, "%s%d%s\n", "*\\o/* The number ", number, " is a happy number. *\\o/*");
+                                                                } else {
+                                                                        fprintf(stdout, "%s%d%s\n", "O_o The number ", number," is a sad number. o_O");
+                                                                }
+
+							break;
+							case 'p':
+								if(isPrime(number)){
+                		                                        fprintf(stdout, "%s%d%s\n", "*\\o/* The number ", number, " is a prime number. *\\o/*");
+                                		                } else {
+                                               		 	        fprintf(stdout, "%s%d%s\n", "O_o The number ", number," is not a prime number. o_O");
+                                                		}
+							break;
+							default:
+								fprintf(stderr, "%s\n", "Falscher Operator!");
+						}
+					} else {
+						fprintf(stderr, "%s\n", "Zahl muss Null oder positiv sein!");
+					}
+				} else {
+					fprintf(stderr,"%s\n", "Zu viele Zeichen für einen Operator!");
+				}		
+			} else {
+				fprintf(stderr,"%s\n", "Positive Ganzzahl nicht erkannt!");
+			}
 		break;
 		default:
+			//err = ERR_TooMuchInformation;
 	}
 	return 0;
 }
