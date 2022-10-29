@@ -42,27 +42,69 @@ printUsage  (FILE * stream) {
   
 }
 
-/*
+/**
+ * <TODO>
+ */
 typedef enum{
 	ERR_None,
 	ERR_NoParameters,
 	ERR_WrongHelp,
-	ERR_TooMuchInformation
+	ERR_TooMuchInformation,
+	ERR_NoPositivNumber,
+	ERR_WrongNumber,
+	ERR_WrongOperator
 }Error;
-*/
 
-
-/**
- * 
- *
- *
- */
-int isDividable(int number){
-	int count = 1;
-
-	if(number % count == 0){
-
+Error
+errorHandling(Error err){
+	switch(err) {
+		case ERR_None:
+		break;
+		case ERR_NoParameters:			fprintf(stderr, "%s\n", "Error: No parameters!");
+		break;
+		case ERR_WrongHelp: 			fprintf(stderr, "%s\n", "Error: Wrong help call!");
+		break;
+		case ERR_TooMuchInformation: 	fprintf(stderr, "%s\n", "Error: Too much information!");
+		break;
+		case ERR_NoPositivNumber: 		fprintf(stderr, "%s\n", "Error: Number must be positive!");
+		break;
+		case ERR_WrongNumber: 			fprintf(stderr, "%s\n", "Error: Number must be integer!");
+		break;
+		case ERR_WrongOperator: 		fprintf(stderr, "%s\n", "Error: Wrong Operator!");
+		break;
 	}
+	if (err != ERR_None) {
+		printUsage(stderr);
+	}
+	return err;
+}
+/**
+ * <TODO>
+ */
+int 
+isHappy(int number){
+	int position = 1,
+		temp = 0,
+		copyNum = number,
+		sum = 0;
+	
+	
+	while(sum != 1 && sum != 4){
+		sum = 0;
+		//Einzelne Positions- und Teilsummenberechnung
+		while (position <= copyNum){
+			temp = (copyNum % (position * 10));
+			temp = temp / position;
+			sum = sum + (temp * temp);
+			position = position * 10;
+		}
+		position = 1;
+		copyNum = sum;
+	}
+	if (sum == 4) {
+		sum = 0;
+	}
+	return sum;
 }
 
 /**
@@ -72,7 +114,8 @@ int isDividable(int number){
  * @param[in]  number Die zu überprüfende Zahl
  * @param[out] int    1 wenn sie eine Primzal ist, 0 wenn sie keine ist. 
  */
-int isPrime (int number){
+int 
+isPrime (int number){
 	int primNum = 1, //Erste Annahme eine Primzahl
 	    count = 2;
 
@@ -122,69 +165,85 @@ int isPrime (int number){
  */
 int
 main (int argc, char * argv[]) {
-	//Error err = ERR_None;
+	Error err = ERR_None;
 	char op = '\0', 
 	     END = '\0';
-	int next = 0, 
-	    previous = 0, 
+	int divisor = 2,
+	    smallestDiv = 2,
 	    number = 0;
 
 	switch(argc) {
 		case 0:
 		case 1: 		
-		//	err = ERR_NoParameters;
+		err = ERR_NoParameters;
 		break;
 		case 2:
 			/* Prüfung auf die korrekte Eingabe des Hilfeaufrufs. */
 			if(sscanf(argv[1], "-%c%c", &op, &END) && (op == 'h') && (END == '\0')){
 				printUsage(stdout);
 			} else {
-				//err = ERR_WrongHelp;
-				fprintf(stderr, "%s\n", "Falsche Hilfe ausgabe! Entferne mich bitte noch!!!");
+				err = ERR_WrongHelp;
 			}
 		break;
 		case 3:
-			if(sscanf(argv[1], "%i%c", &number, &END) == 1){
-				if(sscanf(argv[2], "%c%c", &op, &END) == 1){
-					if (number >= 0) {
-						switch(op){
-							case 'd':
-                                                                if(isDividable(number)){
-									fprintf(stdout, "%s%d%s\n", "The number ", number," has the following divisors: TEILER");
-								} else {
-									fprintf(stdout, "%s%d%s\n", "The number ", number," is not dividable.");
-                                                                }
-							break;
-							case 'h':
-                                                                if(isHappy(number)){
-                                                                        fprintf(stdout, "%s%d%s\n", "*\\o/* The number ", number, " is a happy number. *\\o/*");
-                                                                } else {
-                                                                        fprintf(stdout, "%s%d%s\n", "O_o The number ", number," is a sad number. o_O");
-                                                                }
-
-							break;
-							case 'p':
-								if(isPrime(number)){
-                		                                        fprintf(stdout, "%s%d%s\n", "*\\o/* The number ", number, " is a prime number. *\\o/*");
-                                		                } else {
-                                               		 	        fprintf(stdout, "%s%d%s\n", "O_o The number ", number," is not a prime number. o_O");
-                                                		}
-							break;
-							default:
-								fprintf(stderr, "%s\n", "Falscher Operator!");
-						}
-					} else {
-						fprintf(stderr, "%s\n", "Zahl muss Null oder positiv sein!");
-					}
-				} else {
-					fprintf(stderr,"%s\n", "Zu viele Zeichen für einen Operator!");
-				}		
+			if(sscanf(argv[1], "%i%c", &number, &END) != 1){
+				err = ERR_WrongNumber;
+			} else if(sscanf(argv[2], "%c%c", &op, &END) != 1){
+				err = ERR_WrongOperator;
+			} else if (number < 0) {
+				err = ERR_WrongOperator;
 			} else {
-				fprintf(stderr,"%s\n", "Positive Ganzzahl nicht erkannt!");
+				switch(op){
+					case 'd':
+						if(number != 0){
+							fprintf(stdout, "%s%d%s", "The number ", number,
+											" has the following divisors: 1, ");
+							if(!isPrime(number)){
+								while(divisor < (number/smallestDiv)){
+									if(number % divisor == 0){
+										fprintf(stdout, "%d, ",divisor);
+										smallestDiv = divisor;
+									}
+									divisor++;
+								}
+								while(smallestDiv >= 2){
+									if(number % smallestDiv == 0){
+										fprintf(stdout, "%d, ", (number/smallestDiv));
+									}
+									smallestDiv--;
+								}
+							}
+							fprintf(stdout, "%d\n",number);
+						} else {
+							fprintf(stdout, "%s%d%s\n", "The number ", number,
+											" is not dividable.");
+						}
+					break;
+					case 'h':
+						if(isHappy(number)){
+							fprintf(stdout, "%s%d%s\n", "*\\o/* The number ", number, 
+											" is a happy number. *\\o/*");
+						} else {
+							fprintf(stdout, "%s%d%s\n", "O_o The number ", number,
+											" is a sad number. o_O");
+						}
+					break;
+					case 'p':
+						if(isPrime(number)){
+							fprintf(stdout, "%s%d%s\n", "*\\o/* The number ", number, 
+													" is a prime number. *\\o/*");
+						} else {
+							fprintf(stdout, "%s%d%s\n", "O_o The number ", number,
+											" is not a prime number. o_O");
+						}
+					break;
+					default:
+						err = ERR_WrongOperator;
+				}
 			}
 		break;
 		default:
-			//err = ERR_TooMuchInformation;
+			err = ERR_TooMuchInformation;
 	}
-	return 0;
+	return errorHandling(err);
 }
