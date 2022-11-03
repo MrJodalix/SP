@@ -81,8 +81,14 @@ errorHandling(Error err){
 	}
 	return err;
 }
+
+
 /**
- * <TODO>
+ * Funktion, die überprüft, ob die eingegebene Zahl eine fröhliche Zahl ist. 
+ * Gibt 1 zurück, wenn sie eine ist und 0 wenn nicht.
+ *
+ * @param[in]  number Die zu überprüfende Zahl
+ * @param[out] int    1 wenn sie eine fröhliche Zahl ist, 0 wenn sie keine ist. 
  */
 int 
 isHappy(int number){
@@ -91,21 +97,22 @@ isHappy(int number){
 		copyNum = number,
 		sum = 0;
 
-
-	while(sum != 1 && sum != 4){
-		sum = 0;
-		//Einzelne Positions- und Teilsummenberechnung
-		while (position <= copyNum){
-			temp = (copyNum % (position * 10));
-			temp = temp / position;
-			sum = sum + (temp * temp);
-			position = position * 10;
+	if(number != 0){
+		while(sum != 1 && sum != 4){
+			sum = 0;
+			//Einzelne Positions- und Teilsummenberechnung
+			while (position <= copyNum){
+				temp = (copyNum % (position * 10));
+				temp = temp / position;
+				sum = sum + (temp * temp);
+				position = position * 10;
+			}
+			position = 1;
+			copyNum = sum;
 		}
-		position = 1;
-		copyNum = sum;
-	}
-	if (sum == 4) {
-		sum = 0;
+		if (sum == 4) {
+			sum = 0;
+		}
 	}
 	return sum;
 }
@@ -198,18 +205,21 @@ main (int argc, char * argv[]) {
 							fprintf(stdout, "%s%d%s\n", "The number ", number,
 											" is not dividable.");
 						} else if(number == 1){
-							fprintf(stdout, "%s%d%s", "The number ", number,
-											" has the following divisors: 1\n");
+							fprintf(stdout, "%s%d%s%d%s", "The number ", number,
+											" has the following divisors: ",number ,"\n");
 						} else {
 							fprintf(stdout, "%s%d%s", "The number ", number,
 											" has the following divisors: 1, ");
 							if(!isPrime(number)){
-								while(divisor < (number/smallestDiv)){
+								while((divisor * divisor) <= number){
 									if(number % divisor == 0){
 										fprintf(stdout, "%d, ",divisor);
 										smallestDiv = divisor;
 									}
 									divisor++;
+								}
+								if((smallestDiv * smallestDiv) == number){
+									smallestDiv--;
 								}
 								while(smallestDiv >= 2){
 									if(number % smallestDiv == 0){
