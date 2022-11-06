@@ -2,12 +2,12 @@
 
 suite = [
     Test (
-        name = "Hilfeausgabe",
-        description = "Der Hilfetext muss auf stdout ausgegeben werden.",
-        command = "$DUT -h",
-        stdout = ExpectFile("usage.txt"),
-        stderr = "",
-        returnCode = 0,
+        name = "Leerer String",
+        description = "Fehlercode bei leerem String",
+        command = "$DUT \"\" \"\" \"\" ",
+        stdout = "",
+        stderr = "regex:^Error: Too much information!",
+        returnCode = 7,
         timeout = 10
     ),
     Test (
@@ -25,7 +25,7 @@ suite = [
         command = "$DUT 7 p",
         stdout = ExpectFile("seven_prime.txt"),
         stderr = "",
-        returnCode = "0",
+        returnCode = 0,
         timeout = 10
     ),
     Test (

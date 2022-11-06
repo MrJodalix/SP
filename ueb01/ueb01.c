@@ -5,7 +5,7 @@
  * eine Zahl prim oder froehlich ist und ausgehend von einer Zahl
  * deren Teiler finden kann.
  *
- * @author mhe, mre, tti, Joshua-Scott Schöttke, Ilana Schmara, Gruppe 21
+ * @author mhe, mre, tti, Joshua-Scott Schoettke, Ilana Schmara, Gruppe 21
  *
  */
 
@@ -38,24 +38,31 @@ printUsage  (FILE * stream) {
 	fprintf(stream, "  OP is one of:\n");
 	fprintf(stream, "    p checks whether NUM is prime or not\n");
 	fprintf(stream, "    d looks for the dividers of NUM\n");
-	fprintf(stream, "    h checks whether NUM is a happy number\n");
+	fprintf(stream, "    h checks whether NUM is a happy number\n\n");
 	
 }
 
 /**
- * <TODO>
+ * aufteilung der verschiedenen Fehlercodes
+ * ERR_None ist mit 0 default initialisiert
  */
 typedef enum{
-	ERR_None,
-	ERR_NoParameters,
-	ERR_WrongHelp,
-	ERR_WrongNumber,
-	ERR_WrongOperatorFormat,
-	ERR_NoPositivNumber,
-	ERR_WrongOperator,
-	ERR_TooMuchInformation
+	ERR_None = 0,
+	ERR_NoParameters = 1,
+	ERR_WrongHelp = 2,
+	ERR_WrongNumber = 3,
+	ERR_WrongOperatorFormat = 4,
+	ERR_NoPositivNumber = 5,
+	ERR_WrongOperator = 6,
+	ERR_TooMuchInformation = 7
 }Error;
 
+/**
+ * Gibt im Fehlerfall eine eindeutige Fehlermeldung, sowie die Hilfe auf stderr aus.
+ * 
+ * @param[in] err	Fehlercode 
+ * @param[out] err	EXIT_Code
+ */
 Error
 errorHandling(Error err){
 	switch(err) {
@@ -65,13 +72,13 @@ errorHandling(Error err){
 		break;
 		case ERR_WrongHelp: fprintf(stderr, "%s\n", "Error: Wrong help call!");
 		break;
-		case ERR_WrongNumber: fprintf(stderr, "%s\n", "Error: Number must be integer!");
+		case ERR_WrongNumber: fprintf(stderr, "%s\n", "Error: NUM must be integer!");
 		break;
-		case ERR_WrongOperatorFormat: fprintf(stderr, "%s\n", "Error: Wrong format for operator!");
+		case ERR_WrongOperatorFormat: fprintf(stderr, "%s\n", "Error: Wrong format for OP!");
 		break;
-		case ERR_NoPositivNumber: fprintf(stderr, "%s\n", "Error: Number must be positive!");
+		case ERR_NoPositivNumber: fprintf(stderr, "%s\n", "Error: NUM must be positive!");
 		break;
-		case ERR_WrongOperator: fprintf(stderr, "%s\n", "Error: Wrong Operator!");
+		case ERR_WrongOperator: fprintf(stderr, "%s\n", "Error: Wrong OP!");
 		break;
 		case ERR_TooMuchInformation: fprintf(stderr, "%s\n", "Error: Too much information!");
 		break;
@@ -84,25 +91,28 @@ errorHandling(Error err){
 
 
 /**
- * Funktion, die überprüft, ob die eingegebene Zahl eine fröhliche Zahl ist. 
- * Gibt 1 zurück, wenn sie eine ist und 0 wenn nicht.
+ * Funktion, die ueberprueft, ob die eingegebene Zahl eine froehliche Zahl ist. 
+ * Gibt 1 zurueck, wenn sie eine ist und 0 wenn nicht.
  *
- * @param[in]  number Die zu überprüfende Zahl
- * @param[out] int    1 wenn sie eine fröhliche Zahl ist, 0 wenn sie keine ist. 
+ * @param[in]  number Die zu ueberpruefende Zahl
+ * @param[out] int    1 wenn sie eine froehliche Zahl ist, 0 wenn sie keine ist. 
  */
 int 
 isHappy(int number){
-	int position = 1,
-		temp = 0,
+	int position = 1,	//position der Ziffer die quadriert werden soll
+		temp = 0,		//zwischenspeicherung
 		copyNum = number,
-		sum = 0;
+		sum = 0;		//Ergebnis jeder Einzelberechnung und Endergebnis
 
+	//Die Null ist keine froehliche Zahl
 	if(number != 0){
 		while(sum != 1 && sum != 4){
 			sum = 0;
 			//Einzelne Positions- und Teilsummenberechnung
 			while (position <= copyNum){
+				//Bestimmung der zu betrachtenden Ziffer in der Zahl
 				temp = (copyNum % (position * 10));
+				//Restbetrag ist die zu untersuchende Ziffer
 				temp = temp / position;
 				sum = sum + (temp * temp);
 				position = position * 10;
@@ -118,10 +128,10 @@ isHappy(int number){
 }
 
 /**
- * Funktion, die überprüft, ob die eingegebene Zahl eine Primzahl ist. 
- * Gibt 1 zurück, wenn sie eine ist und 0 wenn nicht.
+ * Funktion, die ueberprueft, ob die eingegebene Zahl eine Primzahl ist. 
+ * Gibt 1 zurueck, wenn sie eine ist und 0 wenn nicht.
  *
- * @param[in]  number Die zu überprüfende Zahl
+ * @param[in]  number Die zu ueberpruefende Zahl
  * @param[out] int    1 wenn sie eine Primzal ist, 0 wenn sie keine ist. 
  */
 int 
@@ -134,7 +144,7 @@ isPrime (int number){
 		primNum = 0;
 	} else if (number == 2) {
 		primNum = 1;
-	//Prüfung auf ungerade Zahlen
+	//Pruefung auf ungerade Zahlen
 	} else if (number % count == 1){
 		count++;
 		//Berechnung ob die Zahl teilbar durch das Quadrat von count ist
@@ -184,8 +194,8 @@ main (int argc, char * argv[]) {
 			err = ERR_NoParameters;
 		break;
 		case 2:
-			/* Prüfung auf die korrekte Eingabe des Hilfeaufrufs. */
-			if(sscanf(argv[1], "-%c%c", &op, &END) && (op == 'h') && (END == '\0')){
+			/* Pruefung auf die korrekte Eingabe des Hilfeaufrufs. */
+			if(sscanf(argv[1], "-%c%c", &op, &END) == 1 && (op == 'h')){
 				printUsage(stdout);
 			} else {
 				err = ERR_WrongHelp;
@@ -201,16 +211,21 @@ main (int argc, char * argv[]) {
 			} else {
 				switch(op){
 					case 'd':
+						// Pruefung auf Teilbarkeit. Jede Zahl außer 0 hat Teiler. 
+						// Mind. 1 und sich selbst
 						if(number == 0){
 							fprintf(stdout, "%s%d%s\n", "The number ", number,
 											" is not dividable.");
 						} else if(number == 1){
-							fprintf(stdout, "%s%d%s%d%s", "The number ", number,
-											" has the following divisors: ",number ,"\n");
+							fprintf(stdout, "%s%d%s%d\n", "The number ", number,
+											" has the following divisors: ",number);
 						} else {
 							fprintf(stdout, "%s%d%s", "The number ", number,
 											" has the following divisors: 1, ");
+							// Wenn die Zahl eine Primzahl ist, brauchen wir nur 
+							// 1 und die Zahl selber ausgeben
 							if(!isPrime(number)){
+								//divisor = 2 zu anfang
 								while((divisor * divisor) <= number){
 									if(number % divisor == 0){
 										fprintf(stdout, "%d, ",divisor);
@@ -218,6 +233,7 @@ main (int argc, char * argv[]) {
 									}
 									divisor++;
 								}
+								//um Dopplung bei ungerader Anzahl an Divisoren zu vermeiden
 								if((smallestDiv * smallestDiv) == number){
 									smallestDiv--;
 								}

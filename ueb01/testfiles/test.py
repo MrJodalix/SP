@@ -6,7 +6,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT -h p",
         stdout = "",
-        stderr = "regex:^Error: Number must be integer!",
+        stderr = "regex:^Error: NUM must be integer!",
         returnCode = 3,
         timeout = 10
     ),
@@ -34,7 +34,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT \"\" d",
         stdout = "",
-        stderr = "regex:^Error: Number must be integer!",
+        stderr = "regex:^Error: NUM must be integer!",
         returnCode = 3,
         timeout = 10
     ),
@@ -43,7 +43,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT \"\" \"\"",
         stdout = "",
-        stderr = "regex:^Error: Number must be integer!",
+        stderr = "regex:^Error: NUM must be integer!",
         returnCode = 3,
         timeout = 10
     ),
@@ -52,7 +52,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT 5 \"\"",
         stdout = "",
-        stderr = "regex:^Error: Wrong format for operator!",
+        stderr = "regex:^Error: Wrong format for OP!",
         returnCode = 4,
         timeout = 10
     ),
@@ -79,7 +79,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT 5 z",
         stdout = "",
-        stderr = "regex:^Error: Wrong Operator!",
+        stderr = "regex:^Error: Wrong OP!",
         returnCode = 6,
         timeout = 10
     ),
@@ -161,7 +161,7 @@ suite = [
         description = "Fehlerfall bei -1 beim Primzahltest",
         command = "$DUT -1 p",
         stdout = "",
-        stderr = "regex:^Error: Number must be positive!",
+        stderr = "regex:^Error: NUM must be positive!",
         returnCode = "5",
         timeout = 10
     ),
@@ -225,7 +225,7 @@ suite = [
         description = "Fehlerfall bei -1 beim Test auf froehliche Zahlen",
         command = "$DUT -1 h",
         stdout = "",
-        stderr = "regex:^Error: Number must be positive!",
+        stderr = "regex:^Error: NUM must be positive!",
         returnCode = "5",
         timeout = 10
     ),
@@ -280,7 +280,7 @@ suite = [
         description = "Fehlerfall bei negativen Zahlen",
         command = "$DUT -1 d",
         stdout = "",
-        stderr = "regex:^Error: Number must be positive!",
+        stderr = "regex:^Error: NUM must be positive!",
         returnCode = "5",
         timeout = 10
     ),
