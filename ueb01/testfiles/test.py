@@ -6,7 +6,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT -h p",
         stdout = "",
-        stderr = "$Error: Number must be integer!",
+        stderr = "regex:^Error: Number must be integer!",
         returnCode = 3,
         timeout = 10
     ),
@@ -16,7 +16,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT p",
         stdout = "",
-        stderr = "$Error: Wrong help call!",
+        stderr = "regex:^Error: Wrong help call!",
         returnCode = 2,
         timeout = 10
     ),
@@ -25,7 +25,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT p d f",
         stdout = "",
-        stderr = "$Error: Too much information!",
+        stderr = "regex:^Error: Too much information!",
         returnCode = 7,
         timeout = 10
     ),
@@ -34,7 +34,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT \"\" d",
         stdout = "",
-        stderr = "$Error: Number must be integer!",
+        stderr = "regex:^Error: Number must be integer!",
         returnCode = 3,
         timeout = 10
     ),
@@ -43,7 +43,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT \"\" \"\"",
         stdout = "",
-        stderr = "$Error: Number must be integer!",
+        stderr = "regex:^Error: Number must be integer!",
         returnCode = 3,
         timeout = 10
     ),
@@ -52,7 +52,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT 5 \"\"",
         stdout = "",
-        stderr = "$Error: Wrong format for operator!",
+        stderr = "regex:^Error: Wrong format for operator!",
         returnCode = 4,
         timeout = 10
     ),
@@ -61,7 +61,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT \"\" \"\" \"\"",
         stdout = "",
-        stderr = "$Error: Too much information!",
+        stderr = "regex:^Error: Too much information!",
         returnCode = 7,
         timeout = 10
     ),
@@ -70,7 +70,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT \"\"",
         stdout = "",
-        stderr = "$Error: Wrong help call!",
+        stderr = "regex:^Error: Wrong help call!",
         returnCode = 2,
         timeout = 10
     ),
@@ -79,7 +79,7 @@ suite = [
         description = "Erwartet die passende Fehlermeldung auf stderr.",
         command = "$DUT 5 z",
         stdout = "",
-        stderr = "$Error: Wrong Operator!",
+        stderr = "regex:^Error: Wrong Operator!",
         returnCode = 6,
         timeout = 10
     ),
@@ -106,7 +106,7 @@ suite = [
         name = "Primzahltest mit 2",
         description = "Ist 2 eine Primzahl?",
         command = "$DUT 2 p",
-        stdout = "O_o The number 2 is not a prime number. o_O$n",
+        stdout = "*\o/* The number 2 is a prime number. *\o/*$n",
         stderr = "",
         returnCode = "0",
         timeout = 10
@@ -161,7 +161,7 @@ suite = [
         description = "Fehlerfall bei -1 beim Primzahltest",
         command = "$DUT -1 p",
         stdout = "",
-        stderr = "$Error: Number must be positive!",
+        stderr = "regex:^Error: Number must be positive!",
         returnCode = "5",
         timeout = 10
     ),
@@ -225,7 +225,7 @@ suite = [
         description = "Fehlerfall bei -1 beim Test auf froehliche Zahlen",
         command = "$DUT -1 h",
         stdout = "",
-        stderr = "$Error: Number must be positive!",
+        stderr = "regex:^Error: Number must be positive!",
         returnCode = "5",
         timeout = 10
     ),
@@ -280,7 +280,7 @@ suite = [
         description = "Fehlerfall bei negativen Zahlen",
         command = "$DUT -1 d",
         stdout = "",
-        stderr = "$Error: Number must be positive!",
+        stderr = "regex:^Error: Number must be positive!",
         returnCode = "5",
         timeout = 10
     ),
