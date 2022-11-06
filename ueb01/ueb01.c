@@ -38,7 +38,7 @@ printUsage  (FILE * stream) {
 	fprintf(stream, "  OP is one of:\n");
 	fprintf(stream, "    p checks whether NUM is prime or not\n");
 	fprintf(stream, "    d looks for the dividers of NUM\n");
-	fprintf(stream, "    h checks whether NUM is a happy number\n\n");
+	fprintf(stream, "    h checks whether NUM is a happy number\n");
 	
 }
 
