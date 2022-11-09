@@ -44,16 +44,24 @@ printUsage  (FILE * stream) {
 
 /**
  * aufteilung der verschiedenen Fehlercodes
- * ERR_None ist mit 0 default initialisiert
+ * ERR_None ist mit 0 initialisiert
  */
 typedef enum{
+	//Kein Fehlerfall
 	ERR_None = 0,
+	//Keine Parameter oder nur der Programmname wurden angegeben
 	ERR_NoParameters = 1,
+	//Falscher Hilfeaufruf. Bsp: -hx oder -x
 	ERR_WrongHelp = 2,
+	//Falsches Format für Zahlen
 	ERR_WrongNumber = 3,
+	//Falsches Format für Operatoren
 	ERR_WrongOperatorFormat = 4,
+	//Wenn die Zahl negativ ist
 	ERR_NoPositivNumber = 5,
+	//Ein nicht implementierter Operator
 	ERR_WrongOperator = 6,
+	//Zu viele Parameter
 	ERR_TooMuchInformation = 7
 }Error;
 

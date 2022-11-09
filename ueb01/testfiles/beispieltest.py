@@ -2,12 +2,12 @@
 
 suite = [
     Test (
-        name = "Leerer String",
-        description = "Fehlercode bei leerem String",
-        command = "$DUT \"\" \"\" \"\" ",
+        name = "Hilfeaufruf",
+        description = "Vergleich mit der Textdatei usage.txt",
+        command = "$DUT -h",
         stdout = "",
-        stderr = "regex:^Error: Too much information!",
-        returnCode = 7,
+        stderr = ExpectFile("usage.txt"),
+        returnCode = 0,
         timeout = 10
     ),
     Test (
