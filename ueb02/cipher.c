@@ -24,8 +24,22 @@
  */
 void
 caesarEncode(Text plain, unsigned int rot) {
+	
 	assert(plain != NULL);
-  /** @TODO Implementation */
+	
+	int 
+		i = 0
+	;
+	
+	while(plain[i] != '\0'){
+		if((plain[i]) + (rot % (BIGGEST_CHAR-SMALLEST_CHAR)) > BIGGEST_CHAR){
+			plain[i] =	((plain[i]) + (rot % (BIGGEST_CHAR-SMALLEST_CHAR))) - 
+						(BIGGEST_CHAR-SMALLEST_CHAR+1);
+		} else {
+			plain[i] = ((plain[i]) + (rot % (BIGGEST_CHAR-SMALLEST_CHAR)));
+		}
+		i++;
+	}
 }
 
 /**
@@ -41,8 +55,22 @@ caesarEncode(Text plain, unsigned int rot) {
  */
 void
 caesarDecode(Text plain, unsigned int rot) {
+	
 	assert(plain != NULL);
-  /** @TODO Implementation */
+	
+	int 
+		i = 0
+	;
+	
+	while(plain[i] != '\0'){
+		if((plain[i]) - (rot % (BIGGEST_CHAR-SMALLEST_CHAR)) < SMALLEST_CHAR){
+			plain[i] =	((plain[i]) - (rot % (BIGGEST_CHAR-SMALLEST_CHAR))) + 
+						(BIGGEST_CHAR-SMALLEST_CHAR+1);
+		} else {
+			plain[i] = ((plain[i]) - (rot % (BIGGEST_CHAR-SMALLEST_CHAR)));
+		}
+		i++;
+	}
 }
 
 /**
@@ -98,9 +126,29 @@ vigenereDecode(Text plain, Text pass) {
  */
 ErrorCode
 readText(Text text, char * str) {
+	
+	ErrorCode error = ERR_NULL;
+	
+	int i = 0;
+	
 	assert((text != NULL) && (str != NULL));
-  /** @TODO Implementation */
-	return ERR_NULL;
+
+
+
+	while(error == ERR_NULL && str[i] != '\0'){
+		if(i >= MAX_TEXT_LENGTH){
+			error = ERR_TEXT_TOO_LONG;
+		} else if (str[i] >= SMALLEST_CHAR && str[i] <= BIGGEST_CHAR){
+			text[i] = str[i];
+		} else {
+			error = ERR_TEXT_ILLEGAL_CHAR;
+		}
+		i++;
+	}
+		
+	text[i] = '\0';
+
+	return error;
 }
 
 /**

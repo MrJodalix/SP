@@ -32,7 +32,7 @@
 
 
 /** Typendefinition fuer einen Text. */
-typedef char Text[MAX_TEXT_LENGTH + 1]; // inkl. Nulltermination
+typedef unsigned char Text[MAX_TEXT_LENGTH + 1]; // inkl. Nulltermination
 
 /** Leerer Text zur Variableninitialisierung. */
 #define EMPTY_TEXT {0}

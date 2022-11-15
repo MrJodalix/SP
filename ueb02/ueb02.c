@@ -3,7 +3,7 @@
  *
  * Hauptprogramm.
  *
- * @author mhe, mre, tti, <TODO Eure Namen ergaenzen>
+ * @author mhe, mre, tti, Ilana Schmara, Joshua-Scott Schoettke, Gruppe 21
  */
 
 
@@ -31,18 +31,18 @@ printUsage(FILE * stream) {
   fprintf(stream, "- or -\n\n");
   fprintf(stream, "ueb02 OPERATION [ARGUMENT] [OPERATION [ARGUMENT], ...]\n\n");
   fprintf(stream, "  Executes a number of (simple cryptographic) operations. The maximum text\n");
-  fprintf(stream, "  size for plain / cipherCode text and key is %i. The allowed input characters\n", MAX_TEXT_LENGTH );
+  fprintf(stream, "  size for plain / cipher text and key is %i. The allowed input characters\n", MAX_TEXT_LENGTH );
   fprintf(stream, "  range from \"%c\" to \"%c\".\n\n", SMALLEST_CHAR, BIGGEST_CHAR);
   fprintf(stream, "  OPERATION:\n");
-  fprintf(stream, "    -t TEXT:  Sets the TEXT as new (plain/cipherCode) text.\n");
-  fprintf(stream, "    -C ROT:   Sets the cipherCode algorithm to caesar.\n");
+  fprintf(stream, "    -t TEXT:  Sets the TEXT as new (plain/cipher) text.\n");
+  fprintf(stream, "    -C ROT:   Sets the cipher algorithm to caesar.\n");
   fprintf(stream, "              ROT is the rotation (a positive integer).\n");
-  fprintf(stream, "    -V KEY:   Sets the cipherCode algorithm to vigenere.\n");
+  fprintf(stream, "    -V KEY:   Sets the cipher algorithm to vigenere.\n");
   fprintf(stream, "              KEY is the nonempty passkey.\n");
   fprintf(stream, "    -e:       Encodes and replaces the current text using the current\n");
-  fprintf(stream, "              cipherCode algorithm.\n");
+  fprintf(stream, "              cipher algorithm.\n");
   fprintf(stream, "    -d:       Decodes and replaces the current text using the current\n");
-  fprintf(stream, "              cipherCode algorithm.\n");
+  fprintf(stream, "              cipher algorithm.\n");
   fprintf(stream, "    -i:       Writes the histogram corresponding to the current text to\n");
   fprintf(stream, "              stdout, followed by a line break.\n");
   fprintf(stream, "    -w:       Writes the current text to stdout, followed by a line break.\n");
@@ -76,27 +76,34 @@ main(int argc, char * argv[]) {
 		error = ERR_NULL
 	;
 	
-	Text text = EMPTY_TEXT;
+	Text 
+		text = EMPTY_TEXT,
+		key = EMPTY_TEXT
+	;
 	
-	char *readStr = "\0",
-		 *Key = "\0";
-	
-	int	idx = 1,
-		ROT = 0;
-					
-	char	OP = '\0',
-			END = '\0';
-			
-	Cipher code = NO_CIPHER;
+	int	
+		idx = 1,
+		rot = -1
+	;
+
+	char	
+		op = '\0',
+		end = '\0',
+		readStr[MAX_TEXT_LENGTH+1] = EMPTY_TEXT
+	;		
+
+	Cipher 
+		code = NO_CIPHER
+	;
 	
 	if(argc < 2){
 		error = ERR_CALL_MISSING_ARGS;
 	} else {
 		while((error == ERR_NULL) && (argv[idx] != NULL)){
-			if(sscanf(argv[idx],"-%c%c", &OP, &END) != 1){
+			if(sscanf(argv[idx],"-%c%c", &op, &end) != 1){
 				error = ERR_UNKNOWN_OPERATION;
 			} else {
-				switch(OP){
+				switch(op){
 					case 'h':
 						if(argc == 2){
 							printUsage(stdout);
@@ -106,56 +113,102 @@ main(int argc, char * argv[]) {
 					break;
 					case 't':
 						idx++;
-						if(sscanf(argv[idx],"%s%c", readStr, &END) == 1){
+						if(sscanf(argv[idx],"%[^\n]%c", readStr, &end) == 1){
 							error = readText(text, readStr);
 						} else {
-							error = ERR_UNKNOWN_OPERATION;
+						    text[0] = '\0';
 						}
 					break;
 					case 'C':
 						idx++;
 						code = CAESAR;
-						if(sscanf(argv[idx],"%d%c", &ROT, &END) != 1){
-							error = ERR_UNKNOWN_OPERATION;
+						if(sscanf(argv[idx],"%d%c", &rot, &end) != 1){
+							error = ERR_CAESAR_INVALID_ROTATION;
 						}
 					break;
 					case 'V':
 						idx++;
 						code = VIGENERE;
-						if(sscanf(argv[idx],"%s%c", Key, &END) != 1){
-							error = ERR_UNKNOWN_OPERATION;
+						if(sscanf(argv[idx],"%[^\n]%c", readStr, &end) == 1){
+							error = readText(key, readStr);
+							if (error == ERR_NULL){	
+								if(key[0] == '\0'){
+									error = ERR_VIGENERE_EMPTY_KEY; 
+								}
+							} else if (error == ERR_TEXT_ILLEGAL_CHAR){
+								error = ERR_VIGENERE_KEY_ILLEGAL_CHAR; 
+							} else if (error == ERR_TEXT_TOO_LONG){
+								error = ERR_VIGENERE_KEY_TOO_LONG; 
+							}
+						} else {
+							error = ERR_VIGENERE_MISSING_KEY;
 						}
 					break;
 					case 'e':
-						if(code == NO_CIPHER){
-							error = ERR_ENCODE_WITHOUT_CIPHER;
-						} else if(code == CAESAR){
-							caesarEncode(text,ROT);
-						} else if(code == VIGENERE){
-							vigenereEncode(text,Key);
+						switch(code){
+							case NO_CIPHER:	error = ERR_ENCODE_WITHOUT_CIPHER; 
+							break;
+							case CAESAR:
+								if(rot < 0) {
+									error = ERR_CAESAR_MISSING_ROTATION;
+								} else if (text[0] == '\0'){
+									error = ERR_TEXT_MISSING_TEXT;
+								} else {
+									caesarEncode(text, rot);
+								}
+							break;
+							case VIGENERE:
+								if(key[0] == '\0') {
+									error = ERR_VIGENERE_MISSING_KEY;
+								} else if (text[0] == '\0'){
+									error = ERR_TEXT_MISSING_TEXT;
+								} else {
+									vigenereEncode(text, key); 
+								}	
+							break;
 						}
 					break;
 					case 'd':
-						if(code == NO_CIPHER){
-							error = ERR_ENCODE_WITHOUT_CIPHER;
-						} else if(code == CAESAR){
-							caesarDecode(text,ROT);
-						} else if(code == VIGENERE){
-							vigenereDecode(text,Key);
+						switch(code){
+							case NO_CIPHER:	error = ERR_ENCODE_WITHOUT_CIPHER; 
+							break;
+							case CAESAR:
+								if(rot < 0) {
+									error = ERR_CAESAR_MISSING_ROTATION;
+								} else if (text[0] == '\0'){
+									error = ERR_TEXT_MISSING_TEXT;
+								} else {
+									caesarDecode(text, rot);
+								}
+							break;
+							case VIGENERE:
+								if(key[0] == '\0') {
+									error = ERR_VIGENERE_MISSING_KEY;
+								} else if (text[0] == '\0'){
+									error = ERR_TEXT_MISSING_TEXT;
+								} else {
+									vigenereDecode(text, key); 
+								}
+							break;
 						}
 					break;
 					case 'i':
-						printHistogram(stdout,text);
+						printHistogram(stdout, text);
 					break;
 					case 'w':
-						printText(stdout,text);
+						printText(stdout, text);
 					break;
 					default:
 						error = ERR_UNKNOWN_OPERATION;
 				}
 			}
 			idx++;
+			
 		}
+	}
+	if(error != ERR_NULL){
+		printError(stderr, error);
+		printUsage(stderr);
 	}
 	return error;
 }
