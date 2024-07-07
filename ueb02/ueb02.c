@@ -48,12 +48,67 @@ printUsage(FILE * stream) {
   fprintf(stream, "    -w:       Writes the current text to stdout, followed by a line break.\n");
 }
 
+/**
+ * Hilfsfunktion
+ * 
+ * Gibt den Fehler auf stderr aus, sowie die Hilfe.
+ *
+ * @param[in]	error	Der Fehlercode
+ *
+ * return		error	Der Fehlercode wird als Exitcode genutzt
+ */
+int
+errorHandling(ErrorCode error){
+
+	if(error != ERR_NULL){
+		printError(stderr, error);
+		printUsage(stderr);
+	}
+	
+	return error;
+}
 
 
+/**
+ * Hilfsfunktion
+ * 
+ * ermittelt ob das uebergebene char pointer eine positive Ganzzahl enthaelt
+ *
+ * @param[in]	searchNum	Der zu ueberpruefende char Pointer
+ * @param[in]	posNumber	Die Zahl die ueberschrieben wird
+ * @param[out]	error		Der Fehlercode der Zurueckgegebn wird
+ *
+ * @pre	searchNum != NULL
+ */
+ErrorCode
+readUInt(int* posNumber, char* searchNum){
+	
+	assert(searchNum != NULL);
+	
+	ErrorCode 
+		error = ERR_NULL
+	;
+	
+	char
+		end = '\0'
+	;
+	
+	if((sscanf(searchNum,"%d%c", posNumber, &end) != 1) || (posNumber[0] < 0)){
+		error = ERR_CAESAR_INVALID_ROTATION;
+	} 
+	return error;
+}
+
+/**
+ * Aufzaehlungstyp der einzelnen Verschluesselungsarten
+ */
 typedef
 enum {
+	/** Keine Verschluesselungsverfahren gewaehlt */
 	NO_CIPHER = 0,
+	/** Caesar-Verschluesselung */
 	CAESAR = 1,
+	/** Vigenere-Verschluesselung */
 	VIGENERE = 2
 }Cipher;
 
@@ -88,18 +143,19 @@ main(int argc, char * argv[]) {
 
 	char	
 		op = '\0',
-		end = '\0',
-		readStr[MAX_TEXT_LENGTH+1] = EMPTY_TEXT
-	;		
-
+		end = '\0'
+	;
+	
 	Cipher 
 		code = NO_CIPHER
 	;
 	
+	//Keine Parameter angegeben
 	if(argc < 2){
 		error = ERR_CALL_MISSING_ARGS;
 	} else {
 		while((error == ERR_NULL) && (argv[idx] != NULL)){
+			//Einlesen des Operators
 			if(sscanf(argv[idx],"-%c%c", &op, &end) != 1){
 				error = ERR_UNKNOWN_OPERATION;
 			} else {
@@ -113,24 +169,32 @@ main(int argc, char * argv[]) {
 					break;
 					case 't':
 						idx++;
-						if(sscanf(argv[idx],"%[^\n]%c", readStr, &end) == 1){
-							error = readText(text, readStr);
+						//Ueberpruefung ob ein Parameter eingegeben wurde
+						if(argv[idx] != NULL){
+							error = readText(text, argv[idx]);
 						} else {
-						    text[0] = '\0';
+							error = ERR_TEXT_MISSING_TEXT;
 						}
 					break;
 					case 'C':
 						idx++;
 						code = CAESAR;
-						if(sscanf(argv[idx],"%d%c", &rot, &end) != 1){
-							error = ERR_CAESAR_INVALID_ROTATION;
+						//Ueberpruefung ob ein Parameter eingegeben wurde
+						if(argv[idx] != NULL){
+							//Hilfsfunktionsaufruf fuer eine positive Ganzzahl
+							error = readUInt(&rot, argv[idx]);
+						} else {
+							error = ERR_CAESAR_MISSING_ROTATION;
 						}
 					break;
 					case 'V':
 						idx++;
 						code = VIGENERE;
-						if(sscanf(argv[idx],"%[^\n]%c", readStr, &end) == 1){
-							error = readText(key, readStr);
+						//Ueberpruefung ob ein Parameter eingegeben wurde
+						if(argv[idx] != NULL){
+							error = readText(key, argv[idx]);
+							//Umschreibung der Fehlerfaelle, da es sich hierbei 
+							//um den Verschluesselungscode handelt 
 							if (error == ERR_NULL){	
 								if(key[0] == '\0'){
 									error = ERR_VIGENERE_EMPTY_KEY; 
@@ -149,46 +213,22 @@ main(int argc, char * argv[]) {
 							case NO_CIPHER:	error = ERR_ENCODE_WITHOUT_CIPHER; 
 							break;
 							case CAESAR:
-								if(rot < 0) {
-									error = ERR_CAESAR_MISSING_ROTATION;
-								} else if (text[0] == '\0'){
-									error = ERR_TEXT_MISSING_TEXT;
-								} else {
-									caesarEncode(text, rot);
-								}
+								caesarEncode(text, rot);
 							break;
 							case VIGENERE:
-								if(key[0] == '\0') {
-									error = ERR_VIGENERE_MISSING_KEY;
-								} else if (text[0] == '\0'){
-									error = ERR_TEXT_MISSING_TEXT;
-								} else {
-									vigenereEncode(text, key); 
-								}	
+								vigenereEncode(text, key); 
 							break;
 						}
 					break;
 					case 'd':
 						switch(code){
-							case NO_CIPHER:	error = ERR_ENCODE_WITHOUT_CIPHER; 
+							case NO_CIPHER:	error = ERR_DECODE_WITHOUT_CIPHER; 
 							break;
 							case CAESAR:
-								if(rot < 0) {
-									error = ERR_CAESAR_MISSING_ROTATION;
-								} else if (text[0] == '\0'){
-									error = ERR_TEXT_MISSING_TEXT;
-								} else {
-									caesarDecode(text, rot);
-								}
+								caesarDecode(text, rot);
 							break;
 							case VIGENERE:
-								if(key[0] == '\0') {
-									error = ERR_VIGENERE_MISSING_KEY;
-								} else if (text[0] == '\0'){
-									error = ERR_TEXT_MISSING_TEXT;
-								} else {
-									vigenereDecode(text, key); 
-								}
+								vigenereDecode(text, key); 
 							break;
 						}
 					break;
@@ -203,12 +243,9 @@ main(int argc, char * argv[]) {
 				}
 			}
 			idx++;
-			
+			//Schleifenende
 		}
 	}
-	if(error != ERR_NULL){
-		printError(stderr, error);
-		printUsage(stderr);
-	}
-	return error;
+	//Rueckgabewert wird ueber die Hilfsfunktion ermittelt 
+	return errorHandling(error);
 }

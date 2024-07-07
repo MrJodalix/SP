@@ -1,0 +1,14 @@
+Der erstellte Index loremipsum-w4.index resultiert aus dem Aufruf:
+
+  ueb04 -w 4 < loremipsum
+
+Also einer minimalen Wortlaenge von 4 und keiner oberen Schranke
+für die Wortlänge.
+
+--
+
+Der erstellte Index hallo_welt.index resultiert aus dem Aufruf:
+
+  ueb04 < hallo_welt
+
+Also einem Aufruf mit den Standardwerten.
